@@ -21,25 +21,29 @@
 mkdir ~/wes_cancer
 cd ~/wes_cancer
 ```
-##in ~/wes_cancer make biosoft project data 3 directories
-##biosoft for sotfware
-##project for intermediate files
-##data for data
+in ~/wes_cancer make biosoft project data 3 directories
+biosoft for sotfware
+project for intermediate files
+data for data
 ```
 mkdir biosoft project data
-```
 cd project
-##in project make intermediate files.
+```
+in project make intermediate files.
+```
 mkdir -p 0.sra 1.raw_fq 2.clean_fq 3.qc/{raw_qc,clean_qc} 4.align/{qualimap,flagstat,stats} 5.gatk/gvcf 6.mutect 7.annotation/{vep,annovar,funcotator,snpeff} 8.cnv/{gatk,cnvkit,gistic,facet} 9.pyclone 10.signature
+```
 
 * The software installation is omited. 
 
 * download the annotation file for reference genome(bed)
+```
 wget ftp://ftp.ncbi.nlm.nih.gov/pub/CCDS/current_human/CCDS.current.txt
 cat CCDS.current.txt | grep  "Public" | perl -alne '{/\[(.*?)\]/;next unless $1;$gene=$F[2];$exons=$1;$exons=~s/\s//g;$exons=~s/-/\t/g;print "$F[0]\t$_\t$gene" foreach split/,/,$exons;}'|sort -u |bedtools sort -i |awk '{if($3>$2) print "chr"$0"\t0\t+"}'  > hg38.exon.bed
+```
 
 * Using Aspera to download gene files from https://sra-explorer.info/
-
+```
 $ cd ~/wes_cancer/project/1.raw_fq
 $ cat >fq_download.sh
 #!/usr/bin/env bash
@@ -54,13 +58,17 @@ ascp -QT -l 300m -P33001 -i $HOME/.aspera/connect/etc/asperaweb_id_dsa.openssh e
 ^C
 
 nohup  bash  fq_download.sh  &
+```
 
 ##delete unnecessary files
+```
 find ./*gz -size 1M | xargs rm
  ##change names of the files 
 ls *gz | while read id; do mv ${id} ${id:31:100}; done
+```
 
  ##The output becomes:
+ ```
 ~/wes_cancer/project/1.raw_fq$ ls
 case3_germline_1.fastq.gz      SRR3182430_2.fastq.gz.partial
 case3_germline_2.fastq.gz      SRR3182430.fastq.gz.partial
@@ -99,6 +107,7 @@ SRR3182429_1.fastq.gz.partial  SRR3182441.fastq.gz.partial
 SRR3182429_2.fastq.gz.partial  SRR3182443_1.fastq.gz.partial
 SRR3182429.fastq.gz.partial    SRR3182443_2.fastq.gz.partial
 SRR3182430_1.fastq.gz.partial  SRR3182443.fastq.gz.partial
+```
 
 
 
