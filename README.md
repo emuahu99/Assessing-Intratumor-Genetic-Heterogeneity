@@ -17,13 +17,17 @@
 # step1: get data for analysis:
 
 * ## make wes_cancer file as working directory
-    mkdir ~/wes_cancer
-    cd ~/wes_cancer
+```
+mkdir ~/wes_cancer
+cd ~/wes_cancer
+```
 ##in ~/wes_cancer make biosoft project data 3 directories
 ##biosoft for sotfware
 ##project for intermediate files
 ##data for data
+```
 mkdir biosoft project data
+```
 cd project
 ##in project make intermediate files.
 mkdir -p 0.sra 1.raw_fq 2.clean_fq 3.qc/{raw_qc,clean_qc} 4.align/{qualimap,flagstat,stats} 5.gatk/gvcf 6.mutect 7.annotation/{vep,annovar,funcotator,snpeff} 8.cnv/{gatk,cnvkit,gistic,facet} 9.pyclone 10.signature
