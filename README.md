@@ -60,14 +60,14 @@ ascp -QT -l 300m -P33001 -i $HOME/.aspera/connect/etc/asperaweb_id_dsa.openssh e
 nohup  bash  fq_download.sh  &
 ```
 
-##delete unnecessary files
+delete unnecessary files
 ```
 find ./*gz -size 1M | xargs rm
  ##change names of the files 
 ls *gz | while read id; do mv ${id} ${id:31:100}; done
 ```
 
- ##The output becomes:
+ The output becomes:
  ```
 ~/wes_cancer/project/1.raw_fq$ ls
 case3_germline_1.fastq.gz      SRR3182430_2.fastq.gz.partial
