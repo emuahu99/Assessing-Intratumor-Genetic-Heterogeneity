@@ -108,6 +108,29 @@ SRR3182429_2.fastq.gz.partial  SRR3182443_1.fastq.gz.partial
 SRR3182429.fastq.gz.partial    SRR3182443_2.fastq.gz.partial
 SRR3182430_1.fastq.gz.partial  SRR3182443.fastq.gz.partial
 ```
+* Fastqc and Trimming Adapters
+```
+conda activate wes
+cd ~/wes_cancer/project
+
+(wes) ubuntu@VM-0-17-ubuntu:~/wes_cancer/project$ conda activate wes
+(wes) ubuntu@VM-0-17-ubuntu:~/wes_cancer/project$ cd ~/wes_cancer/project
+(wes) ubuntu@VM-0-17-ubuntu:~/wes_cancer/project$ 
+(wes) ubuntu@VM-0-17-ubuntu:~/wes_cancer/project$ cat config | while read id  do fastqc --outdir ./3.qc/raw_qc/ --threads 16 ./1.raw_fq/${id}*.fastq.gz >>       ./3.qc/raw_qc/${id}_fastqc.log 2>&1 
+done
+
+multiqc  ./3.qc/raw_qc/*zip  -o ./3.qc/raw_qc/multiqc
+
+cat config | while read id
+do
+	fastqc --outdir ./3.qc/raw_qc/ --threads 16 ./1.raw_fq/${id}*.fastq.gz >> ./3.qc/raw_qc/${id}_fastqc.log 2>&1 
+done 
+
+multiqc  ./3.qc/raw_qc/*zip  -o ./3.qc/raw_qc/multiqc
+```
+
+
+
 
 
 
