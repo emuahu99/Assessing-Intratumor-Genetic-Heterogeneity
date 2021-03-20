@@ -17,8 +17,8 @@
 # step1: get data for analysis:
 
 * ## make wes_cancer file as working directory
-mkdir ~/wes_cancer
-cd ~/wes_cancer
+    mkdir ~/wes_cancer
+    cd ~/wes_cancer
 ##in ~/wes_cancer make biosoft project data 3 directories
 ##biosoft for sotfware
 ##project for intermediate files
