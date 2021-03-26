@@ -142,30 +142,6 @@ nohup bash trim_galore.sh &
 ```
 
 ```
-ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/3.qc/clean_qc$ ls
-case1_biorep_A_techrep_1_1_trimmed.fq.gz
-case1_biorep_B_1_trimmed.fq.gz
-case1_germline_1_trimmed.fq.gz
-case2_biorep_A_1_trimmed.fq.gz
-case2_biorep_B_techrep_1_1_trimmed.fq.gz
-case2_biorep_C_1_trimmed.fq.gz
-case2_biorep_C_2_trimmed.fq.gz
-case2_germline_1_trimmed.fq.gz
-case3_biorep_A_1_trimmed.fq.gz
-case3_biorep_B_1_trimmed.fq.gz
-case3_biorep_C_techrep_1_1_trimmed.fq.gz
-case3_germline_1_trimmed.fq.gz
-case4_biorep_A_1_trimmed.fq.gz
-case4_biorep_B_techrep_1_1_trimmed.fq.gz
-case4_biorep_C_1_trimmed.fq.gz
-case4_germline_1_trimmed.fq.gz
-case4_techrep_2_1_trimmed.fq.gz
-case5_biorep_A_1_trimmed.fq.gz
-case5_biorep_B_techrep_1_1_trimmed.fq.gz
-case5_germline_1_trimmed.fq.gz
-case6_biorep_A_techrep_1_1_trimmed.fq.gz
-case6_biorep_B_1_trimmed.fq.gz
-case6_biorep_C_1_trimmed.fq.gz
 # The data is so big and I am sharing this HPC with others and some of my samples get deleted bu others to allocate more space. This is just a practice so 
 not a big deal to just analyze this much data. 
 ```
@@ -194,6 +170,127 @@ time bwa index -a bwtsw -p gatk_hg38 ~/wes_cancer/data/Homo_sapiens_assembly38.f
 [BWTIncConstructFromPacked] 160 iterations done. 1599999994 characters processed.
 [BWTIncConstructFromPacked] 170 iterations done. 1699999994 characters processed.
 ```
+
+```
+[bwt_gen] Finished constructing BWT in 711 iterations.
+[bwa_index] 2519.46 seconds elapse.
+[bwa_index] Update BWT... 16.50 sec
+[bwa_index] Pack forward-only FASTA... 15.06 sec
+[bwa_index] Construct SA from BWT and Occ... 1038.62 sec
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa index -a bwtsw -p gatk_hg38 /home/ubuntu/wes_cancer/data/Homo_sapiens_assembly38.fasta
+[main] Real time: 3712.628 sec; CPU: 3613.414 sec
+
+real	61m52.635s
+user	59m57.243s
+sys	0m16.172s
+```
+
+```
+mv *_val_2.fq.gz ~/wes_cancer/project/2.clean_fq
+mv *_val_1.fq.gz ~/wes_cancer/project/2.clean_fq
+
+## bwa.sh
+INDEX=~/trybwa/gatk_hg38/gatk_hg38
+cat config | while read id
+do 
+arr=($id)
+sample=${arr[0]}
+fq1=${arr[1]}
+fq2=${arr[2]}
+bwa mem -t 5 -R "@RG\tID:$sample\tSM:$sample\tLB:WGS\tPL:Illumina" $INDEX $fq1 $fq2 |samtools sort  -@ 2 -o $sample.bam -
+done 
+
+bash bwa.sh
+```
+```
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/2.clean_fq$ bash bwa.sh
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa mem -t 5 -R @RG\tID:case1_biorep_B_1_val_1.fq.gz\tSM:case1_biorep_B_1_val_1.fq.gz\tLB:WGS\tPL:Illumina /home/ubuntu/trybwa/gatk_hg38/gatk_hg38 case1_biorep_B_2_val_2.fq.gz
+[main] Real time: 2.895 sec; CPU: 2.896 sec
+[M::bwa_idx_load_from_disk] read 0 ALT contigs
+[main] Version: 0.7.17-r1188
+[main] CMD: bwa mem -t 5 -R @RG\tID:case2_biorep_B_techrep_1_1_val_1.fq.gz\tSM:case2_biorep_B_techrep_1_1_val_1.fq.gz\tLB:WGS\tPL:Illumina /home/ubuntu/trybwa/gatk_hg38/gatk_hg38 case2_biorep_A_2_val_2.fq.gz
+
+...
+[main] CMD: bwa mem -t 5 -R @RG\tID:case6_biorep_C_1_val_1.fq.gz\tSM:case6_biorep_C_1_val_1.fq.gz\tLB:WGS\tPL:Illumina /home/ubuntu/trybwa/gatk_hg38/gatk_hg38 case6_biorep_C_2_val_2.fq.gz
+[main] Real time: 2.775 sec; CPU: 2.775 sec
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/2.clean_fq$ ls
+case1_biorep_B_1_val_1.fq.gz
+case1_biorep_B_1_val_1.fq.gz.bam
+case1_biorep_B_2_val_2.fq.gz
+case2_biorep_A_2_val_2.fq.gz
+case2_biorep_B_techrep_1_1_val_1.fq.gz
+case2_biorep_B_techrep_1_1_val_1.fq.gz.bam
+case2_biorep_C_2_val_2.fq.gz
+case2_germline_1_val_1.fq.gz
+case2_germline_1_val_1.fq.gz.bam
+case2_germline_2_val_2.fq.gz
+case3_biorep_A_1_val_1.fq.gz
+case3_biorep_A_1_val_1.fq.gz.bam
+case3_biorep_A_2_val_2.fq.gz
+case3_biorep_B_1_val_1.fq.gz
+case3_biorep_B_1_val_1.fq.gz.bam
+case3_biorep_B_2_val_2.fq.gz
+case3_biorep_C_techrep_1_1_val_1.fq.gz
+case3_biorep_C_techrep_1_1_val_1.fq.gz.bam
+case3_germline_2_val_2.fq.gz
+case4_biorep_A_1_val_1.fq.gz
+case4_biorep_A_1_val_1.fq.gz.bam
+case4_germline_2_val_2.fq.gz
+case4_techrep_2_1_val_1.fq.gz
+case4_techrep_2_1_val_1.fq.gz.bam
+case5_biorep_A_1_val_1.fq.gz
+case5_biorep_A_1_val_1.fq.gz.bam
+case5_biorep_A_2_val_2.fq.gz
+case5_biorep_B_techrep_1_1_val_1.fq.gz
+case5_biorep_B_techrep_1_1_val_1.fq.gz.bam
+case5_biorep_B_techrep_1_2_val_2.fq.gz
+case6_biorep_A_techrep_1_1_val_1.fq.gz
+case6_biorep_A_techrep_1_1_val_1.fq.gz.bam
+case6_biorep_A_techrep_1_2_val_2.fq.gz
+case6_biorep_C_1_val_1.fq.gz
+case6_biorep_C_1_val_1.fq.gz.bam
+case6_biorep_C_2_val_2.fq.gz
+case6_germline_1.fastq.gz_trim.log
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
