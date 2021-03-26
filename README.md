@@ -128,6 +128,77 @@ done
 
 multiqc  ./3.qc/raw_qc/*zip  -o ./3.qc/raw_qc/multiqc
 ```
+```
+# Using trim_galore to trim bad quality fastq and remove adapters. 
+## trim_galore.sh
+cat config | while read id
+do
+	fq1=./1.raw_fq/${id}_1.fastq.gz
+	fq2=./1.raw_fq/${id}_2.fastq.gz
+	trim_galore  --paired -q 28 --phred33 --length 30 --stringency 3 --gzip --cores 8 -o ./2.clean_fq  $fq1  $fq2 >> ./2.clean_fq/${id}_trim.log 2>&1
+done
+
+nohup bash trim_galore.sh &
+```
+
+```
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/3.qc/clean_qc$ ls
+case1_biorep_A_techrep_1_1_trimmed.fq.gz
+case1_biorep_B_1_trimmed.fq.gz
+case1_germline_1_trimmed.fq.gz
+case2_biorep_A_1_trimmed.fq.gz
+case2_biorep_B_techrep_1_1_trimmed.fq.gz
+case2_biorep_C_1_trimmed.fq.gz
+case2_biorep_C_2_trimmed.fq.gz
+case2_germline_1_trimmed.fq.gz
+case3_biorep_A_1_trimmed.fq.gz
+case3_biorep_B_1_trimmed.fq.gz
+case3_biorep_C_techrep_1_1_trimmed.fq.gz
+case3_germline_1_trimmed.fq.gz
+case4_biorep_A_1_trimmed.fq.gz
+case4_biorep_B_techrep_1_1_trimmed.fq.gz
+case4_biorep_C_1_trimmed.fq.gz
+case4_germline_1_trimmed.fq.gz
+case4_techrep_2_1_trimmed.fq.gz
+case5_biorep_A_1_trimmed.fq.gz
+case5_biorep_B_techrep_1_1_trimmed.fq.gz
+case5_germline_1_trimmed.fq.gz
+case6_biorep_A_techrep_1_1_trimmed.fq.gz
+case6_biorep_B_1_trimmed.fq.gz
+case6_biorep_C_1_trimmed.fq.gz
+# The data is so big and I am sharing this HPC with others and some of my samples get deleted bu others to allocate more space. This is just a practice so 
+not a big deal to just analyze this much data. 
+```
+```
+cd ~/wes_cancer/data
+gunzip Homo_sapiens_assembly38.fasta.gz
+time bwa index -a bwtsw -p gatk_hg38 ~/wes_cancer/data/Homo_sapiens_assembly38.fasta
+[bwa_index] Pack FASTA... 23.77 sec
+[bwa_index] Construct BWT for the packed sequence...
+[BWTIncCreate] textLength=6434693834, availableWord=464768632
+[BWTIncConstructFromPacked] 10 iterations done. 99999994 characters processed.
+[BWTIncConstructFromPacked] 20 iterations done. 199999994 characters processed.
+[BWTIncConstructFromPacked] 30 iterations done. 299999994 characters processed.
+[BWTIncConstructFromPacked] 40 iterations done. 399999994 characters processed.
+[BWTIncConstructFromPacked] 50 iterations done. 499999994 characters processed.
+[BWTIncConstructFromPacked] 60 iterations done. 599999994 characters processed.
+[BWTIncConstructFromPacked] 70 iterations done. 699999994 characters processed.
+[BWTIncConstructFromPacked] 80 iterations done. 799999994 characters processed.
+[BWTIncConstructFromPacked] 90 iterations done. 899999994 characters processed.
+[BWTIncConstructFromPacked] 100 iterations done. 999999994 characters processed.
+[BWTIncConstructFromPacked] 110 iterations done. 1099999994 characters processed.
+[BWTIncConstructFromPacked] 120 iterations done. 1199999994 characters processed.
+[BWTIncConstructFromPacked] 130 iterations done. 1299999994 characters processed.
+[BWTIncConstructFromPacked] 140 iterations done. 1399999994 characters processed.
+[BWTIncConstructFromPacked] 150 iterations done. 1499999994 characters processed.
+[BWTIncConstructFromPacked] 160 iterations done. 1599999994 characters processed.
+[BWTIncConstructFromPacked] 170 iterations done. 1699999994 characters processed.
+```
+
+
+
+
+
 
 
 
