@@ -277,6 +277,7 @@ qualimap
 stats
 ```
 | col | Name | description | example |
+| --- | --- | --- | --- |
 | 1 | QNAME | The name of the read | case6_biorep_A_tech |
 | 2 | FLAG | binary description | 129 
 | 3 | RNAME | Reference sequence NAME, CHR | CHR17 |
