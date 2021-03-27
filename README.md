@@ -256,7 +256,46 @@ case6_biorep_C_2_val_2.fq.gz
 case6_germline_1.fastq.gz_trim.log
 ```
 
+```
+mv *bam ~/wes_cancer/project/4.align
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/2.clean_fq$ cd ~/wes_cancer/project/4.align
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/4.align$ ls
+case1_biorep_B_1_val_1.fq.gz.bam
+case2_biorep_B_techrep_1_1_val_1.fq.gz.bam
+case2_germline_1_val_1.fq.gz.bam
+case3_biorep_A_1_val_1.fq.gz.bam
+case3_biorep_B_1_val_1.fq.gz.bam
+case3_biorep_C_techrep_1_1_val_1.fq.gz.bam
+case4_biorep_A_1_val_1.fq.gz.bam
+case4_techrep_2_1_val_1.fq.gz.bam
+case5_biorep_A_1_val_1.fq.gz.bam
+case5_biorep_B_techrep_1_1_val_1.fq.gz.bam
+case6_biorep_A_techrep_1_1_val_1.fq.gz.bam
+case6_biorep_C_1_val_1.fq.gz.bam
+flagstat
+qualimap
+stats
+```
+| col | Name | description | example |
+| 1 | QNAME | The name of the read | case6_biorep_A_tech |
+| 2 | FLAG | binary description | 129 
+| 3 | RNAME | Reference sequence NAME, CHR | CHR17 |
+| 4 | POS | 1-based leftmost mapping POSition on CHR | 42852401 |
+| 5 | MAPQ | MAPping Quality | 60|
+| 6 | CIGAR | \*|([0-9]+[MIDNSHPX=])+ M I D | 76M3D |  
+| 7 | RNEXT | Reference name of the mate/next read | Chr11 |
+| 8 | PNEXT |  observed Template LENgth | 96427099 |
+| 9 | TLEN  | observed Template LENgth | 0 |
+| 10 | SEQ | The second line of the file seq | CGTTC...TCT |
+| 11 | QUAL | ASCII of Phred-scaled base QUALity+33 | @@@?D..CA
 
+
+```
+#extract a small bam for IGV visualizaiton. 
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/4.align$ samtools index case1_biorep_B_1_val_1.fq.gz.bam
+samtools view -h case1_biorep_B_1_val_1.fq.gz.bam chr17 | samtools view -Sb - > small.bam
+ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/4.align$ samtools index small.bam
+```
 
 
 
