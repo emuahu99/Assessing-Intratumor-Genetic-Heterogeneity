@@ -70,43 +70,13 @@ ls *gz | while read id; do mv ${id} ${id:31:100}; done
  The output becomes:
  ```
 ~/wes_cancer/project/1.raw_fq$ ls
-case3_germline_1.fastq.gz      SRR3182430_2.fastq.gz.partial
-case3_germline_2.fastq.gz      SRR3182430.fastq.gz.partial
-case4_germline_1.fastq.gz      SRR3182431_1.fastq.gz.partial
-fq_download.sh		       SRR3182431_2.fastq.gz.partial
-nohup.out		       SRR3182431.fastq.gz.partial
-SRR3182418_1.fastq.gz.partial  SRR3182432_1.fastq.gz.partial
-SRR3182418_2.fastq.gz.partial  SRR3182432_2.fastq.gz.partial
-SRR3182418.fastq.gz.partial    SRR3182432.fastq.gz.partial
-SRR3182419_1.fastq.gz.partial  SRR3182433_1.fastq.gz.partial
-SRR3182419_2.fastq.gz.partial  SRR3182433_2.fastq.gz.partial
-SRR3182419.fastq.gz.partial    SRR3182433.fastq.gz.partial
-SRR3182420_2.fastq.gz.partial  SRR3182434_1.fastq.gz.partial
-SRR3182422_1.fastq.gz.partial  SRR3182434_2.fastq.gz.partial
-SRR3182422_2.fastq.gz.partial  SRR3182434.fastq.gz.partial
-SRR3182422.fastq.gz.partial    SRR3182435_1.fastq.gz.partial
-SRR3182423_1.fastq.gz.partial  SRR3182435_2.fastq.gz.partial
-SRR3182423_2.fastq.gz.partial  SRR3182435.fastq.gz.partial
-SRR3182423.fastq.gz.partial    SRR3182436_1.fastq.gz.partial
-SRR3182424_1.fastq.gz.partial  SRR3182436_2.fastq.gz.partial
-SRR3182424_2.fastq.gz.partial  SRR3182436.fastq.gz.partial
-SRR3182424.fastq.gz.partial    SRR3182437_1.fastq.gz.partial
-SRR3182425_1.fastq.gz.partial  SRR3182437_2.fastq.gz.partial
-SRR3182425_2.fastq.gz.partial  SRR3182438_1.fastq.gz.partial
-SRR3182425.fastq.gz.partial    SRR3182438_2.fastq.gz.partial
-SRR3182426_1.fastq.gz.partial  SRR3182438.fastq.gz.partial
-SRR3182426_2.fastq.gz.partial  SRR3182439_1.fastq.gz.partial
-SRR3182426.fastq.gz.partial    SRR3182439_2.fastq.gz.partial
-SRR3182427_1.fastq.gz.partial  SRR3182439.fastq.gz.partial
-SRR3182427_2.fastq.gz.partial  SRR3182440_1.fastq.gz.partial
-SRR3182427.fastq.gz.partial    SRR3182440_2.fastq.gz.partial
-SRR3182428_1.fastq.gz.partial  SRR3182440.fastq.gz.partial
-SRR3182428_2.fastq.gz.partial  SRR3182441_1.fastq.gz.partial
-SRR3182428.fastq.gz.partial    SRR3182441_2.fastq.gz.partial
-SRR3182429_1.fastq.gz.partial  SRR3182441.fastq.gz.partial
-SRR3182429_2.fastq.gz.partial  SRR3182443_1.fastq.gz.partial
-SRR3182429.fastq.gz.partial    SRR3182443_2.fastq.gz.partial
-SRR3182430_1.fastq.gz.partial  SRR3182443.fastq.gz.partial
+case3_germline_1.fastq.gz     
+case3_germline_2.fastq.gz     
+case4_germline_1.fastq.gz 
+...
+...
+nohup.out		   
+
 ```
 * Fastqc and Trimming Adapters
 ```
@@ -298,14 +268,98 @@ samtools view -h case1_biorep_B_1_val_1.fq.gz.bam chr17 | samtools view -Sb - > 
 ubuntu@VM-0-17-ubuntu:~/wes_cancer/project/4.align$ samtools index small.bam
 ```
 
+```
+## stats.sh
+cat config | while read id
+do
+	bam=./4.align/${id}.bam
+	samtools stats -@ 16 --reference ~/wes_cancer/data/Homo_sapiens_assembly38.fasta ${bam} > ./4.align/stats/${id}.stat
+
+	plot-bamstats -p ./4.align/stats/${id} ./4.align/stats/${id}.stat
+done
+
+#qualimap
+cat config | while read id
+do
+	qualimap bamqc --java-mem-size=10G -gff ~/wes_cancer/data/hg38.exon.bed -nr 100000 -nw 500 -nt 16 -bam ./4.align/${id}.bam -outdir ./4.align/qualimap/${id}
+done
+
+#GATK
+dbsnp_146.hg38.vcf.gz 
+dbsnp_146.hg38.vcf.gz.tbi 
+Mills_and_1000G_gold_standard.indels.hg38.vcf.gz 
+Mills_and_1000G_gold_standard.indels.hg38.vcf.gz.tbi 
+Homo_sapiens_assembly38.fasta
+Homo_sapiens_assembly38.fasta.gz 
+Homo_sapiens_assembly38.fasta.fai 
+Homo_sapiens_assembly38.dict 
+1000G_phase1.snps.high_confidence.hg38.vcf.gz 
+1000G_phase1.snps.high_confidence.hg38.vcf.gz.tbi
 
 
 
 
+#markduplicate.
+GATK=~/wes_cancer/biosoft/gatk-4.1.4.1/gatk
+
+cat config  | while read id
+do
+	BAM=./4.align/${id}.bam
+	if [ ! -f ./5.gatk/ok.${id}_marked.status ]
+	then
+		echo "start MarkDuplicates for ${id}" `date`
+		$GATK --java-options "-Xmx20G -Djava.io.tmpdir=./" MarkDuplicates \
+		-I ${BAM} \
+		--REMOVE_DUPLICATES=true \
+		-O ./5.gatk/${id}_marked.bam \
+		-M ./5.gatk/${id}.metrics \
+		1>./5.gatk/${id}_log.mark 2>&1 
+		
+		if [ $? -eq 0 ]
+		then
+			touch ./5.gatk/ok.${id}_marked.status
+		fi
+		echo "end MarkDuplicates for ${id}" `date`
+		samtools index -@ 16 -m 4G -b ./5.gatk/${id}_marked.bam ./5.gatk/${id}_marked.bai
+	fi
+done
+
+samtools view case1_biorep_B_1_1.fq.gz.bam | wc -l
+93168816
+
+samtools view case1_biorep_B_1_1.fq.gz_marked.bam | wc -l
+93168816
 
 
 
-
+#Base quality score recalibration
+GATK=~/wes_cancer/biosoft/gatk-4.1.4.1/gatk
+snp=~/wes_cancer/data/dbsnp_146.hg38.vcf.gz
+indel=~/wes_cancer/data/Mills_and_1000G_gold_standard.indels.hg38.vcf.gz
+ref=~/wes_cancer/data/Homo_sapiens_assembly38.fasta
+cat config  | while read id
+do
+	if [ ! -f ./5.gatk/${id}_bqsr.bam ]
+	then
+		echo "start BQSR for ${id}" `date`
+		$GATK --java-options "-Xmx20G -Djava.io.tmpdir=./"  BaseRecalibrator \
+		-R $ref  \
+		-I ./5.gatk/${id}_marked.bam  \
+		--known-sites ${snp} \
+		--known-sites ${indel} \
+		-O ./5.gatk/${id}_recal.table \
+		1>./5.gatk/${id}_log.recal 2>&1 
+		
+		$GATK --java-options "-Xmx20G -Djava.io.tmpdir=./"  ApplyBQSR \
+		-R $ref  \
+		-I ./5.gatk/${id}_marked.bam  \
+		-bqsr ./5.gatk/${id}_recal.table \
+		-O ./5.gatk/${id}_bqsr.bam \
+		1>./5.gatk/${id}_log.ApplyBQSR  2>&1 
+		
+		echo "end BQSR for ${id}" `date`
+	fi
+done
 
 
 
